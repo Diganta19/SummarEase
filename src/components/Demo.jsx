@@ -1,15 +1,36 @@
 /* eslint-disable no-unused-vars */
 import { useState,useEffect } from "react"
 import {linkIcon, copy,loader,tick} from '../assets'
+import {useLazyGetSummaryQuery} from '../services/article'
 
 const Demo = () => {
   const [article,setArticle] = useState({
     url:'',
     summary:''
   });
+  
+  const [allArticles, setAllArticles] = useState([]);
 
+  const [getSummary, {error,isFetching}] = useLazyGetSummaryQuery();
+
+  useEffect(()=>{
+    const articlesFromLocalStorage = JSON.parse(localStorage.getItem('articles'));
+
+    if(articlesFromLocalStorage){
+      setAllArticles(articlesFromLocalStorage)
+    }
+  },[])
   const handleSubmit = async (e)=>{
-    alert('su')
+    e.preventDefault();
+    const {data} = await getSummary({articleUrl:article.url});
+    if(data?.summary){
+      const newArticle={...article,summary:data.summary};
+      const updatedAllArticles = [newArticle,...allArticles]
+      setArticle(newArticle);
+      setAllArticles(updatedAllArticles);
+
+      localStorage.setItem('articles',JSON.stringify(updatedAllArticles));
+    }
   }
 
   return (
@@ -20,6 +41,18 @@ const Demo = () => {
             <input type="url" placeholder="Enter a URL" value={article.url} onChange={(e)=>setArticle({article,url:e.target.value})} required className="url_input peer"/>
             <button type="submit" className="submit_btn peer-focus:border-gray-700 peer-focus:text-grey-700" >Search</button>
           </form>
+
+          <div className="flex flex-col gap-1 overflow-y-auto max-h-60">
+            {allArticles.map((item,index) => (
+              <div key={`link-${index}`} className="link_card" onClick={()=>setArticle(item)}>
+                  <div className="copy_btn">
+                    <img src={copy} alt="copy_icon" className="w-[40%] h-[40%] object-contain"/>
+                  </div>
+                  <p className="flex-1 truncate text-blue-700 font-medium text-sm font-satoshi">{item.url}</p>
+              </div>
+            ))}
+          </div>
+
           </div>      
     </section>
   )
