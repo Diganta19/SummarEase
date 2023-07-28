@@ -46,7 +46,7 @@ const Demo = () => {
           <form className="relative justify-center flex items-center" onSubmit={handleSubmit}>
             <img src={linkIcon} alt="link_icon" className="absolute left-0 my-2 ml-3 w-5"/>
             <input type="url" placeholder="Enter a URL" value={article.url} onChange={(e)=>setArticle({article,url:e.target.value})} required className="url_input peer"/>
-            <button type="submit" className="submit_btn peer-focus:border-gray-700 peer-focus:text-grey-700" >Search</button>
+            <button type="submit" className="submit_btn peer-focus:border-gray-700 peer-focus:text-grey-700" >Go</button>
           </form>
 
           <div className="flex flex-col gap-1 overflow-y-auto max-h-60">
